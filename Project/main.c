@@ -4,6 +4,8 @@
 #include <GL/glut.h>
 #include "color.h"
 #include "drawTracks.h"
+#include "drawBush.h"
+#include "drawTree.h"
 
 /* Callback func. */
 static void on_display();
@@ -16,6 +18,7 @@ static float sphereX = 0.0, sphereY = -0.6, sphereZ = -2.5, sphereSize = 0.1;
 
 /* Drawing func. */
 static void draw_tracks();
+static void draw_bush();
 /* Colors */
 static void color(int id);
 
@@ -66,7 +69,13 @@ static void on_display(){
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 	
+
+    //there would be a function of drawing everything
+    //in some loop just call that function multiple times
+    //with different positions of obstacles
     draw_tracks();
+    draw_bush();
+    draw_tree();
 
 	/* creating runner */
 	color(2);
