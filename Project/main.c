@@ -8,10 +8,14 @@
 #include "drawTree.h"
 #include "drawGame.h"
 
+#define RUNNING 0
+#define JUMPING 1
+
 /* Callback func. */
 static void on_display();
 static void on_keyboard(unsigned char key, int x, int y);
 static void on_reshape(int width, int height);
+static void on_timer(int id);
 
 static float animationParameter;
 static float activated;
@@ -24,6 +28,13 @@ static void draw_bush();
 static void color(int id);
 
 static float moveSpeed = 0.5;
+
+static int sphereXid = 0;
+static int isJumping = 0;
+
+/* jumping info */
+static float height = -0.8;
+static float ground = -0.1;
 
 /* tracks info in tracks.h */
 
@@ -123,16 +134,50 @@ static void on_display(){
 }
 
 static void on_keyboard(unsigned char key, int x, int y){
-	switch(key){
-		case 27: /* ESC - quit the program */
-			exit(0);
-			break;
+	   switch(key){
+        case 27: /* ESC - quit the program */
+            exit(0);
+            break;
+        case 's': /* S - start the program */
+        case 'S':
+            if (!activated){
+                glutTimerFunc(10, on_timer, RUNNING);
+                activated = 1;
+            }
+            break;
         case 'p': /* p - pause the program */
         case 'P':
             activated = 0;
             break;
-	}
-
+        case 'a': /* a - turn left */
+        case 'A':
+            if (activated){
+                if(sphereX < -0.4) /* smash the border */
+                    break;
+                else {
+                    sphereX -= 0.6;
+                    sphereXid -= 1;
+                }   
+            }
+            break;
+        case 'd': /* d - turn right */
+        case 'D':
+            if (activated){
+                if(sphereX > 0.4) /* smash the border */
+                    break;
+                else {
+                    sphereX += 0.6;
+                    sphereXid += 1;
+                }
+            }
+            break;
+        case 32: /* SPACE - jumping */
+            if (!isJumping && activated){
+                glutTimerFunc(10, on_timer, JUMPING);
+                isJumping = 1;
+            }
+            break;
+    }
 	glutPostRedisplay();
 }
 
@@ -143,4 +188,47 @@ static void on_reshape(int width, int height){
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(50, (float) width / height, 0.5, 20); 
+}
+
+static void on_timer(int id){
+    if (id != 0 && id != 1)
+        return;
+
+    animationParameter = animationParameter + 0.5;
+    
+    /* DO NOT let run during the jump */
+    if (id == RUNNING){
+        if (activated){
+            glutTimerFunc(10, on_timer, RUNNING);
+        }    
+    }
+
+    /* time to jump */
+    if (id == JUMPING) {
+        if (height < -0.1) {
+            sphereY += 0.023*moveSpeed;
+            height += 0.023*moveSpeed; 
+
+        }
+        /* riches the height */
+        else if (ground > -0.6) {
+            /* until hit the ground */
+            sphereY -= 0.023*moveSpeed;
+            ground -= 0.023*moveSpeed;
+        }
+        /* ground = reset values */
+        else {
+            isJumping = 0;
+            height = -0.6;
+            ground = -0.1;
+            sphereY = -0.6;
+            return;
+        }
+
+        if(isJumping)
+            glutTimerFunc(10, on_timer, JUMPING);
+        else
+            glutTimerFunc(10, on_timer, RUNNING);
+    }
+    glutPostRedisplay();
 }
