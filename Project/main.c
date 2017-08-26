@@ -6,6 +6,7 @@
 #include "drawTracks.h"
 #include "drawBush.h"
 #include "drawTree.h"
+#include "drawGame.h"
 
 /* Callback func. */
 static void on_display();
@@ -22,7 +23,12 @@ static void draw_bush();
 /* Colors */
 static void color(int id);
 
+static float moveSpeed = 0.5;
+
 /* tracks info in tracks.h */
+
+/* paths movement */
+static float sideY = 2.3, sideZ = 7.9;
 
 int main(int argc, char **argv) {
 	 /* GLUT Init */
@@ -73,9 +79,23 @@ static void on_display(){
     //there would be a function of drawing everything
     //in some loop just call that function multiple times
     //with different positions of obstacles
-    draw_tracks();
-    draw_bush();
-    draw_tree();
+
+    //draw_tracks();
+    // draw_bush();
+    // draw_tree();
+
+    int i;
+    for (i = 0; i < 100; i++){
+        /* pomeramo scenu simuliramo kretanje */
+        float move_y = i*(sideY)-0.0023*animationParameter*moveSpeed-0.016; 
+        float move_z = i*(-sideZ)+0.0079*animationParameter*moveSpeed;
+        glTranslatef(0, move_y, move_z);
+        draw_game(i, move_y, move_z);
+        glTranslatef(0, -move_y, -move_z);
+
+        /* speed improvment */
+        moveSpeed += 0.000025;   
+    }
 
 	/* creating runner */
 	color(2);
