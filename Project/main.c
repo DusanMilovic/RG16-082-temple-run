@@ -6,6 +6,7 @@
 #include "drawTracks.h"
 #include "drawBush.h"
 #include "drawTree.h"
+#include "smash.h"
 #include "drawGame.h"
 
 #define RUNNING 0
@@ -17,20 +18,17 @@ static void on_keyboard(unsigned char key, int x, int y);
 static void on_reshape(int width, int height);
 static void on_timer(int id);
 
-static float animationParameter;
-static float activated;
-static float sphereX = 0.0, sphereY = -0.6, sphereZ = -2.5, sphereSize = 0.1;
-
 /* Drawing func. */
+static void draw_game(int level, float moveY, float moveZ);
 static void draw_tracks();
 static void draw_bush();
+static void draw_tree();
+static void smash(int id, int id_x, float y, float z);
 /* Colors */
 static void color(int id);
 
 static float moveSpeed = 0.5;
-
-static int sphereXid = 0;
-static int isJumping = 0;
+static float animationParameter;
 
 /* jumping info */
 static float height = -0.8;
@@ -86,7 +84,6 @@ static void on_display(){
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 	
-
     //there would be a function of drawing everything
     //in some loop just call that function multiple times
     //with different positions of obstacles
@@ -114,6 +111,7 @@ static void on_display(){
 	glRotatef(45, 1, 1, 1);
 	glRotatef(-15*animationParameter, 1, 0, 0.5);
 	/*glutSolidSphere(sphereSize,200,200);*/
+    /* wire sphere just to be able to see rotation */
     glutWireSphere(sphereSize, 5, 5);
     glRotatef(15*animationParameter, 1, 0, 0.5);
 	glRotatef(-45, 1, 1, 1);
@@ -134,13 +132,13 @@ static void on_display(){
 }
 
 static void on_keyboard(unsigned char key, int x, int y){
-	   switch(key){
+    switch(key){
         case 27: /* ESC - quit the program */
             exit(0);
             break;
         case 's': /* S - start the program */
         case 'S':
-            if (!activated){
+            if (!activated && !collisionId){
                 glutTimerFunc(10, on_timer, RUNNING);
                 activated = 1;
             }
@@ -151,7 +149,7 @@ static void on_keyboard(unsigned char key, int x, int y){
             break;
         case 'a': /* a - turn left */
         case 'A':
-            if (activated){
+            if (activated && !collisionId){
                 if(sphereX < -0.4) /* smash the border */
                     break;
                 else {
@@ -162,7 +160,7 @@ static void on_keyboard(unsigned char key, int x, int y){
             break;
         case 'd': /* d - turn right */
         case 'D':
-            if (activated){
+            if (activated && !collisionId){
                 if(sphereX > 0.4) /* smash the border */
                     break;
                 else {
@@ -172,13 +170,14 @@ static void on_keyboard(unsigned char key, int x, int y){
             }
             break;
         case 32: /* SPACE - jumping */
-            if (!isJumping && activated){
+            if (!isJumping && activated && !collisionId){
                 glutTimerFunc(10, on_timer, JUMPING);
                 isJumping = 1;
             }
             break;
     }
-	glutPostRedisplay();
+
+    glutPostRedisplay();
 }
 
 static void on_reshape(int width, int height){
