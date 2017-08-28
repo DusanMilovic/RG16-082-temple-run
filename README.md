@@ -20,9 +20,9 @@ Different things:
 
 
 All Commands:
-S 		-> Start the game
-P 		-> Pause the game
-ESC		-> Quit the game
-A 		-> Turn to left path
-D 		-> Turn to right path
-SPACE 	-> Jump
+- S 		-> Start the game
+- P 		-> Pause the game
+- ESC		-> Quit the game
+- A 		-> Turn to left path
+- D 		-> Turn to right path
+- SPACE 	-> Jump
