@@ -12,6 +12,11 @@
 #define RUNNING 0
 #define JUMPING 1
 
+
+float sphereXCopy;
+int left =0;
+int right = 0;
+
 /* Callback func. */
 static void on_display();
 static void on_keyboard(unsigned char key, int x, int y);
@@ -153,9 +158,12 @@ static void on_keyboard(unsigned char key, int x, int y){
                 if(sphereX < -0.4) /* smash the border */
                     break;
                 else {
-                    sphereX -= 0.6;
+                    left = 1;
+                    right = 0;
+                    //sphereX -= 0.6;
+                    sphereXCopy = sphereX - 0.6 + moveSpeed*0.023;
                     sphereXid -= 1;
-                }   
+                }  
             }
             break;
         case 'd': /* d - turn right */
@@ -164,7 +172,10 @@ static void on_keyboard(unsigned char key, int x, int y){
                 if(sphereX > 0.4) /* smash the border */
                     break;
                 else {
-                    sphereX += 0.6;
+                    right = 1;
+                    left  = 0;
+                    //sphereX += 0.6;
+                    sphereXCopy = sphereX + 0.6 - moveSpeed*0.023;
                     sphereXid += 1;
                 }
             }
@@ -196,10 +207,21 @@ static void on_timer(int id){
     animationParameter = animationParameter + 0.5;
     
     /* DO NOT let run during the jump */
-    if (id == RUNNING){
+      if (id == RUNNING){
         if (activated){
             glutTimerFunc(10, on_timer, RUNNING);
-        }    
+        }
+        if (left){
+            if (sphereX >= sphereXCopy){
+                sphereX -= 0.018*moveSpeed;
+            }
+            right = 0;
+        } else if (right){
+            if (sphereX <= sphereXCopy){
+                sphereX += 0.018*moveSpeed;
+            }
+            left = 0 ;
+        }
     }
 
     /* time to jump */
