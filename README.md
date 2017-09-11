@@ -32,5 +32,3 @@ Different things:
 |F/f    |   Fullscreen	|
 |Q/q	|   Change color|
 |V/v	|   Change view	|
-
-![Alt Text](https://github.com/MATF-RG16/RG16-082-temple-run/blob/master/gameplay.gif?raw=true)
