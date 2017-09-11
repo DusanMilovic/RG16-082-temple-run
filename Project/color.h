@@ -19,6 +19,11 @@ static void color(int id){
                 diffuse_coeffs[1] = 1;
                 diffuse_coeffs[2] = 0;
                 break;
+        case 3: //red runner
+                diffuse_coeffs[0] = 1;
+                diffuse_coeffs[1] = 0;
+                diffuse_coeffs[2] = 0;
+                break;
         default:        
                 diffuse_coeffs[0] = 0.1;
                 diffuse_coeffs[1] = 0.1;

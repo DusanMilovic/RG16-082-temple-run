@@ -19,10 +19,18 @@ Different things:
 - No gaining coins during run
 
 
-All Commands:
-- S 		-> Start the game
-- P 		-> Pause the game
-- ESC		-> Quit the game
-- A 		-> Turn to left path
-- D 		-> Turn to right path
-- SPACE 	-> Jump
+### -Temple Run-
+|Key	|Control 		|
+|-------|---------------|
+|S/s    |   Start		|
+|P/p    |   Pause		|
+|A/a    |   Left		|
+|D/d    |   Right		|
+|SPACE  |   Jump		|
+|Esc    |   Exit		|
+|R/r    |   Random Init	|
+|F/f    |   Fullscreen	|
+|Q/q	|   Change color|
+|V/v	|   Change view	|
+
+![Alt Text](https://github.com/MATF-RG16/RG16-082-temple-run/blob/master/gameplay.gif?raw=true)

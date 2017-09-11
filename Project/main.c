@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
+#include <unistd.h>
 #include <GL/glut.h>
 #include "color.h"
 #include "drawTracks.h"
@@ -13,9 +15,8 @@
 #define JUMPING 1
 
 
-float sphereXCopy;
-int left =0;
-int right = 0;
+
+//float zgo;
 
 /* Callback func. */
 static void on_display();
@@ -32,12 +33,11 @@ static void smash(int id, int id_x, float y, float z);
 /* Colors */
 static void color(int id);
 
-static float moveSpeed = 0.5;
 static float animationParameter;
 
 /* jumping info */
-static float height = -0.8;
-static float ground = -0.1;
+static float height = -0.6;
+
 
 /* tracks info in tracks.h */
 
@@ -49,10 +49,16 @@ int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
-	glutInitWindowSize(800, 500);
+    glutInitWindowSize(800, 500);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
-
+    glutFullScreen();
+    
+    fullscreen = true;
+    changeRunner = false;
+    
+    changeView = false;
+    
     animationParameter = 0;
     activated = 0;
 
@@ -80,8 +86,14 @@ static void on_display(){
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0, 0.4, 0, 0, 0.35, -0.26, 0, 1, 0);
-
+    
+    
+    if (changeView){
+        gluLookAt(0+sphereX, sphereY+0.1, -1.9, 0, 0.85, -7, 0, 1, 0);        
+    } else {
+        gluLookAt(0, 0.4, 0, 0, 0.35, -0.26, 0, 1, 0);
+    }
+    
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
@@ -100,8 +112,8 @@ static void on_display(){
     int i;
     for (i = 0; i < 100; i++){
         /* pomeramo scenu simuliramo kretanje */
-        float move_y = i*(sideY)-0.0023*animationParameter*moveSpeed-0.016; 
-        float move_z = i*(-sideZ)+0.0079*animationParameter*moveSpeed;
+        move_y = i*(sideY)-0.0023*animationParameter*moveSpeed-0.016; 
+        move_z = i*(-sideZ)+0.0079*animationParameter*moveSpeed;
         glTranslatef(0, move_y, move_z);
         draw_game(i, move_y, move_z);
         glTranslatef(0, -move_y, -move_z);
@@ -111,7 +123,9 @@ static void on_display(){
     }
 
 	/* creating runner */
-	color(2);
+        if (changeRunner){
+            color(3);
+        }else color(2);
 	glTranslatef(sphereX, sphereY, sphereZ);
 	glRotatef(45, 1, 1, 1);
 	glRotatef(-15*animationParameter, 1, 0, 0.5);
@@ -123,7 +137,7 @@ static void on_display(){
 	glTranslatef(-sphereX, -sphereY, -sphereZ);
     
     /* creating hunter */    
-    color(3);
+    color(4);
     glTranslatef(sphereX, sphereY, sphereZ);
 	glRotatef(20, 1, 1, 1);
     glRotatef(15*animationParameter, 0, 0, 0.1);
@@ -186,6 +200,28 @@ static void on_keyboard(unsigned char key, int x, int y){
                 isJumping = 1;
             }
             break;
+        case 'r':
+        case 'R':
+            randInit();
+            break;
+        case 'f':
+        case 'F':
+            fullscreen = !fullscreen;
+            if (fullscreen){
+                glutFullScreen();   
+            } else {
+                glutReshapeWindow(800, 500);
+		glutInitWindowPosition(100, 100);
+            }
+            break;
+        case 'q':
+        case 'Q':
+            changeRunner = !changeRunner;
+            break;
+        case 'v':
+        case 'V':
+            changeView = !changeView;
+            break;
     }
 
     glutPostRedisplay();
@@ -227,13 +263,17 @@ static void on_timer(int id){
     /* time to jump */
     if (id == JUMPING) {
         if (height < -0.1) {
+            //sphereZ += 0.023*moveSpeed;
             sphereY += 0.023*moveSpeed;
             height += 0.023*moveSpeed; 
-
         }
         /* riches the height */
+        else if (height > -0.79 && height < 1){
+            height += 0.023*moveSpeed;
+        }
         else if (ground > -0.6) {
             /* until hit the ground */
+            //sphereZ -= 0.023*moveSpeed;
             sphereY -= 0.023*moveSpeed;
             ground -= 0.023*moveSpeed;
         }
@@ -243,6 +283,7 @@ static void on_timer(int id){
             height = -0.6;
             ground = -0.1;
             sphereY = -0.6;
+            //sphereZ = -2.5;
             return;
         }
 
@@ -250,6 +291,6 @@ static void on_timer(int id){
             glutTimerFunc(10, on_timer, JUMPING);
         else
             glutTimerFunc(10, on_timer, RUNNING);
-    }
+    }     
     glutPostRedisplay();
 }
