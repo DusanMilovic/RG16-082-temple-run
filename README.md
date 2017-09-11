@@ -4,19 +4,14 @@ Temple run
 Comparison to real Temple Run:
 
 
-Same things:
+Description:
 - 1 runner, 1 who is chasing
 - 3 paths (left - middle - right) 
 - camera behind runners
 - if hit the obstcale the end
 - during the time the game becomes faster
 - during the time mode is changing (4 different modes)
-
-
-Different things:
-- No slow down if just barely hit the obstcale
-- No turning left or right
-- No gaining coins during run
+- changing camera makes better feeling
 
 
 ### -Temple Run-
